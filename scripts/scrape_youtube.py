@@ -1,7 +1,11 @@
 import os
 import csv
 import sys
-from youtube_comment_downloader import YoutubeCommentDownloader, SORT_BY_POPULAR
+try:
+    from yt_dlp import YoutubeDL
+except ImportError:
+    print("[!] yt-dlp is not installed in the virtual environment. Please run: pip install yt-dlp")
+    sys.exit(1)
 
 # Pre-defined list of diverse Nepali video reviews and discussions across different categories
 DEFAULT_VIDEOS = [
@@ -34,12 +38,11 @@ DEFAULT_VIDEOS = [
 
 def scrape_nepali_comments(videos, output_file="data/raw/raw_comments.csv", max_comments_per_video=200):
     """
-    Scrapes comments from a list of YouTube video URLs and saves them to a single CSV file.
+    Scrapes comments from a list of YouTube video URLs using yt-dlp and saves them to a single CSV file.
     Categorizes reviews to support multi-domain analysis.
     Does not require a YouTube API key.
     """
-    print(f"[*] Initializing multi-domain YouTube downloader...")
-    downloader = YoutubeCommentDownloader()
+    print(f"[*] Initializing multi-domain YouTube downloader using yt-dlp backend...")
     
     # Ensure target directory exists
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
@@ -60,24 +63,36 @@ def scrape_nepali_comments(videos, output_file="data/raw/raw_comments.csv", max_
             print(f"\n[*] Scraping Category: [{category}] | Name: '{name}'")
             print(f"    URL: {url}")
             
+            # Configure yt-dlp extraction options
+            ydl_opts = {
+                "getcomments": True,       # Enable comment extraction
+                "skip_download": True,     # Do not download the video itself
+                "quiet": True,             # Suppress verbose log printouts
+                "no_warnings": True,
+                "extractor_args": {
+                    "youtube": {
+                        "max_comments": [str(max_comments_per_video)], # Limit fetched comments
+                    },
+                },
+            }
+            
             try:
-                # Retrieve comments generator
-                comments_gen = downloader.get_comments_from_url(url, sort_by=SORT_BY_POPULAR)
+                with YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    comments = info.get("comments") or info.get("comment_entries") or []
             except Exception as e:
-                print(f"[-] Error accessing video URL {url}: {e}. Skipping...")
+                print(f"[-] Error extracting comments for video '{name}': {e}")
+                print("    (Note: This could be due to country/geo-restrictions on the video or comments being disabled). Skipping...")
                 continue
                 
             video_count = 0
-            for comment in comments_gen:
-                if video_count >= max_comments_per_video:
-                    break
-                    
+            for comment in comments:
                 writer.writerow([
-                    comment.get('cid'),
+                    comment.get('id'),
                     comment.get('author'),
                     comment.get('text'),
-                    comment.get('likes'),
-                    comment.get('time'),
+                    comment.get('like_count', 0),
+                    comment.get('time_text') or comment.get('timestamp') or 'Unknown',
                     name,
                     category
                 ])
