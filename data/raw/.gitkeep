@@ -1,0 +1,2 @@
+# Keep this directory in version control even if it is empty.
+# Dataset files (.csv, .xlsx, .json) should be ignored.
