@@ -1,18 +1,16 @@
 # Aspect-Based Sentiment Analysis (ABSA) on Code-Mixed Nepali-English Product Reviews
 
-A production-grade, research-oriented natural language processing (NLP) project focused on identifying explicit and implicit product aspects and their associated sentiment polarities from code-mixed Nepali-English social media comments and reviews.
+A production-grade, research-oriented natural language processing (NLP) framework designed to identify explicit and implicit product aspects and determine their associated sentiment polarities from code-mixed Nepali-English social media comments and reviews.
 
 ---
 
-## 🚀 Project Overview
+## 🚀 Key Features
 
-In the Nepalese digital landscape, users communicating on e-commerce (e.g., Daraz) and social media platforms (e.g., YouTube, Facebook, TikTok) rarely write in standard English or pure Devanagari script. Instead, they predominantly use **Code-Mixed Nepali-English** written in either Devanagari or Romanized (transliterated) script.
-
-This project addresses this low-resource NLP challenge by establishing:
-1. **Automated Scraping Pipelines:** Gathering real-world code-mixed reviews from tech channels (without requiring Google API Keys).
-2. **Specialized Text Normalization:** Cleansing Devanagari unicode structures and standardizing colloquial Romanized Nepali tokens.
-3. **Multi-Task Deep Learning:** Fine-tuning transformer models (e.g., XLM-RoBERTa) to simultaneously classify **Aspect Category** (e.g., *Camera, Battery, Price*) and **Sentiment Polarity** (e.g., *Positive, Negative, Neutral*).
-4. **Cloud-Ready Deployment:** Serving the model via a **FastAPI** backend and showcasing it with a beautiful, interactive **Streamlit** dashboard.
+* **Zero-Configuration Scraper:** Collects real-world social media and YouTube comments without requiring Google API Keys or complex developer accounts.
+* **Specialized Text Normalization:** Cleanses Devanagari unicode structures and standardizes colloquial Romanized (transliterated) Nepali tokens into a normalized form for machine learning pipelines.
+* **Multi-Task Deep Learning Architecture:** Adapts state-of-the-art cross-lingual Transformer models (e.g., XLM-RoBERTa) to simultaneously classify Aspect Categories (e.g., *Camera, Battery, Price*) and Sentiment Polarities (e.g., *Positive, Negative, Neutral*).
+* **High-Performance API Layer:** Served using a fast, lightweight FastAPI backend providing REST endpoints for single-text and batch inferences.
+* **Interactive Analytics Dashboard:** Built with Streamlit to offer users real-time visualization of aspects, sentiment distributions, and batch CSV processing capabilities.
 
 ---
 
@@ -23,27 +21,27 @@ sentiment-analysis-dl/
 │
 ├── data/
 │   ├── raw/                 # Raw comment exports (ignored by Git)
-│   └── processed/           # Normalised and annotated datasets
+│   └── processed/           # Normalized and annotated datasets
 │
 ├── notebooks/               # EDA & Model Prototyping
 │
 ├── scripts/
 │   └── scrape_youtube.py    # Zero-configuration YouTube scraper
 │
-├── src/                     # Production Package Source Code
+├── src/                     # Core NLP Package
 │   ├── __init__.py
-│   ├── data_pipeline.py     # Cleansing and processing logic
+│   ├── data_pipeline.py     # Cleansing and text normalization
 │   ├── tokenizer.py         # Subword tokenization wrappers
 │   ├── model.py             # Custom deep learning/transformer architectures
 │   ├── train.py             # Model training with WandB/MLflow logs
 │   └── evaluate.py          # Metric calculations & benchmarking
 │
-├── api/                     # High-performance REST API
+├── api/                     # Inference REST API
 │   ├── __init__.py
-│   ├── main.py              # FastAPI app
-│   └── schemas.py           # Pydantic schemas
+│   ├── main.py              # FastAPI application
+│   └── schemas.py           # Pydantic validation schemas
 │
-├── dashboard/               # Frontend Dashboard
+├── dashboard/               # Analytics Frontend
 │   └── app.py               # Streamlit application
 │
 ├── requirements.txt         # Package dependencies
@@ -52,40 +50,55 @@ sentiment-analysis-dl/
 
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Installation & Setup
 
-### 1. Prerequisite: Local Virtual Environment
-Create and activate your Python virtual environment:
+### 1. Prerequisites
+Ensure you have Python 3.8+ installed on your system.
 
-```powershell
-# In PowerShell:
+### 2. Virtual Environment Setup
+Clone this repository and set up a Python virtual environment:
+
+```bash
+# Initialize and activate the virtual environment
 python -m venv venv
-.\venv\Scripts\Activate
 
-# In Command Prompt (CMD):
-python -m venv venv
+# For Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+
+# For Windows (Command Prompt):
 .\venv\Scripts\activate.bat
+
+# For macOS/Linux:
+source venv/bin/activate
 ```
 
-### 2. Install Dependencies
+### 3. Install Dependencies
+Install all required libraries including PyTorch, Transformers, FastAPI, and Streamlit:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Data Collection (Scraping)
-To scrape real-world code-mixed comments from popular Nepali tech YouTube videos (e.g., reviews of smartphones, laptops, or gadgets), run:
+---
+
+## 💻 Usage
+
+### 1. Data Collection (YouTube Scraper)
+To harvest code-mixed comments and product reviews directly from YouTube videos (e.g., device reviews and tech channels):
 ```bash
 python scripts/scrape_youtube.py
 ```
-This automatically parses popular video comments and saves them directly to `data/raw/raw_comments.csv` without requiring any API keys.
+This script exports the fetched reviews directly into `data/raw/raw_comments.csv` without requiring any external YouTube API credentials.
 
----
+### 2. Start the Inference API
+To serve the multi-task aspect and sentiment predictions over local REST endpoints:
+```bash
+python api/main.py
+```
+The server starts locally at `http://127.0.0.1:8000`. You can access the interactive API docs (Swagger UI) at `http://127.0.0.1:8000/docs`.
 
-## 📈 Roadmap & Core Tasks
-- [x] Establish directory structure and modular package bindings.
-- [x] Deploy zero-config YouTube comments scraper.
-- [ ] Build specialized Nepali/Romanized text pre-processing and cleaning engine.
-- [ ] Design and implement semi-automated data annotator for ABSA categories.
-- [ ] Implement baseline machine learning (TF-IDF + SVM).
-- [ ] Fine-tune state-of-the-art Transformer models (XLM-RoBERTa / DeBERTa).
-- [ ] Implement FastAPI serving endpoints and deploy Streamlit analytics interface.
+### 3. Start the Interactive Dashboard
+To launch the frontend dashboard for analyzing individual reviews or visualizing batch uploads:
+```bash
+streamlit run dashboard/app.py
+```
+The dashboard will open automatically in your browser (typically at `http://localhost:8501`).
