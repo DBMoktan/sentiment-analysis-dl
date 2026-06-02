@@ -1,5 +1,5 @@
 # Data Collection & Parsing
-youtube-comment-downloader>=0.2.2
+youtube-comment-downloader>=0.1.78
 pandas>=2.0.0
 numpy>=1.24.0
 
