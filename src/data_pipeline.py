@@ -113,3 +113,29 @@ def split_dataset(df: pd.DataFrame, processed_dir: str, test_size: float = 0.2, 
     print(f"[+] Validation dataset saved to: {val_path} | Count: {len(val_df)}")
     
     return train_df, val_df
+
+if __name__ == "__main__":
+    print("=== Nepali Code-Mixed Normalizer Test ===")
+    normalizer = NepaliTextNormalizer()
+    
+    # Test sample with mixed scripts, emojis, links, handles, double spaces, and punctuation
+    sample_review = "यो phone को camera babal lagyo malai! 😍 Best specs under 40k. Visit https://gadgetbyte.com @gadgetbytenepal !!!"
+    print("\nOriginal Text:")
+    print(sample_review)
+    
+    cleaned_review = normalizer.normalize_text(sample_review)
+    print("\nCleaned Text:")
+    print(cleaned_review)
+    
+    # Run the dataset pipeline if raw comments exist
+    raw_path = "data/raw/raw_comments.csv"
+    processed_dir = "data/processed"
+    processed_path = os.path.join(processed_dir, "processed_comments.csv")
+    
+    if os.path.exists(raw_path):
+        print("\n=== Running Dataset Preprocessing Pipeline ===")
+        processed_df = load_and_preprocess_dataset(raw_path, processed_path)
+        split_dataset(processed_df, processed_dir)
+        print("\n[+] Preprocessing & splitting completed successfully!")
+    else:
+        print(f"\n[!] Raw data not found at '{raw_path}'. Run scripts/scrape_youtube.py first to collect comments.")
