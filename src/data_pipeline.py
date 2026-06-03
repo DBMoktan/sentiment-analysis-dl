@@ -63,3 +63,35 @@ class NepaliTextNormalizer:
         text = text.lower()
         
         return text
+
+def load_and_preprocess_dataset(input_path: str, output_path: str) -> pd.DataFrame:
+    """
+    Loads raw CSV, cleans comments using NepaliTextNormalizer, and outputs a processed CSV.
+    """
+    print(f"[*] Loading raw dataset from: {input_path}")
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Raw dataset file not found at: {input_path}")
+        
+    df = pd.read_csv(input_path)
+    
+    # Identify comment text column
+    text_col = 'CommentText' if 'CommentText' in df.columns else df.columns[2]
+    print(f"[*] Preprocessing text column: '{text_col}'")
+    
+    normalizer = NepaliTextNormalizer()
+    print("[*] Running cleaning and normalization pipeline...")
+    df['CleanedText'] = df[text_col].apply(normalizer.normalize_text)
+    
+    # Filter out empty comments after cleaning
+    initial_count = len(df)
+    df = df[df['CleanedText'].str.strip() != '']
+    removed_count = initial_count - len(df)
+    if removed_count > 0:
+        print(f"[!] Removed {removed_count} comments that became empty after cleaning.")
+        
+    # Save the processed dataset
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False, encoding='utf-8')
+    print(f"[+] Cleaned dataset saved to: {output_path} | Count: {len(df)}")
+    
+    return df
