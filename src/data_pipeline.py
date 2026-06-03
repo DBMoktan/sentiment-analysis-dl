@@ -21,6 +21,14 @@ class NepaliTextNormalizer:
         # ZWJ/ZWNJ unicode characters pattern
         self.zwnj_zwj_pattern = re.compile(r'[\u200c\u200d]')
 
+    def clean_urls_and_mentions(self, text: str) -> str:
+        """Removes social media mentions, handles, and web URLs."""
+        if not isinstance(text, str):
+            return ""
+        text = self.url_pattern.sub('', text)
+        text = self.mention_pattern.sub('', text)
+        return text
+
     def normalize_text(self, text: str) -> str:
         # Placeholder for main orchestrator
         return text
