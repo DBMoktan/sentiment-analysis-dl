@@ -37,6 +37,10 @@ class NepaliTextNormalizer:
         text = self.zwnj_zwj_pattern.sub('', text)
         return text
 
+    def clean_noise_and_punctuation(self, text: str) -> str:
+        """Strips emojis, special characters, and non-whitelisted punctuation."""
+        return self.clean_char_pattern.sub(' ', text)
+
     def normalize_text(self, text: str) -> str:
         # Placeholder for main orchestrator
         return text
