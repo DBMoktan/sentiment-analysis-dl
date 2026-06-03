@@ -29,6 +29,14 @@ class NepaliTextNormalizer:
         text = self.mention_pattern.sub('', text)
         return text
 
+    def normalize_unicode(self, text: str) -> str:
+        """Standardizes Devanagari unicode sequences and strips non-printable control chars."""
+        # Normalize characters (canonical composition)
+        text = unicodedata.normalize('NFKC', text)
+        # Strip Zero Width Non-Joiner (ZWNJ) and Zero Width Joiner (ZWJ)
+        text = self.zwnj_zwj_pattern.sub('', text)
+        return text
+
     def normalize_text(self, text: str) -> str:
         # Placeholder for main orchestrator
         return text
