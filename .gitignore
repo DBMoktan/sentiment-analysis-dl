@@ -151,3 +151,6 @@ outputs/
 runs/
 wandb/
 .web/
+
+# Local Academic Documentation
+docs/
