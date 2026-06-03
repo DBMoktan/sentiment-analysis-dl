@@ -95,3 +95,21 @@ def load_and_preprocess_dataset(input_path: str, output_path: str) -> pd.DataFra
     print(f"[+] Cleaned dataset saved to: {output_path} | Count: {len(df)}")
     
     return df
+
+def split_dataset(df: pd.DataFrame, processed_dir: str, test_size: float = 0.2, random_state: int = 42):
+    """
+    Splits the preprocessed dataset into Train and Validation sets and saves them as CSV files.
+    """
+    print(f"[*] Splitting dataset (test_size={test_size})...")
+    train_df, val_df = train_test_split(df, test_size=test_size, random_state=random_state)
+    
+    train_path = os.path.join(processed_dir, "train.csv")
+    val_path = os.path.join(processed_dir, "val.csv")
+    
+    train_df.to_csv(train_path, index=False, encoding='utf-8')
+    val_df.to_csv(val_path, index=False, encoding='utf-8')
+    
+    print(f"[+] Train dataset saved to: {train_path} | Count: {len(train_df)}")
+    print(f"[+] Validation dataset saved to: {val_path} | Count: {len(val_df)}")
+    
+    return train_df, val_df
