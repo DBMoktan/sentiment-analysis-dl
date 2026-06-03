@@ -42,5 +42,24 @@ class NepaliTextNormalizer:
         return self.clean_char_pattern.sub(' ', text)
 
     def normalize_text(self, text: str) -> str:
-        # Placeholder for main orchestrator
+        """
+        Executes the full text cleaning pipeline.
+        Suitable for both Devanagari and Romanized text.
+        """
+        if not isinstance(text, str):
+            return ""
+        
+        # 1. Clear links and handles
+        text = self.clean_urls_and_mentions(text)
+        
+        # 2. Normalize Devanagari and clean control characters
+        text = self.normalize_unicode(text)
+        
+        # 3. Strip emojis, special characters, and standard punctuation
+        text = self.clean_noise_and_punctuation(text)
+        
+        # 4. Collapse spaces and convert to lowercase (lowercases Romanized characters)
+        text = self.spaces_pattern.sub(' ', text).strip()
+        text = text.lower()
+        
         return text
